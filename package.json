@@ -1,0 +1,36 @@
+{
+	"name": "llink",
+	"version": "1.0.0",
+	"description": "Url shortener service",
+	"main": "src/server.ts",
+	"type": "module",
+	"scripts": {
+		"build": "tsc -p tsconfig.json",
+		"dev": "node --watch src/server.ts"
+	},
+	"keywords": [
+		"url-shortener",
+		"shortener",
+		"url-shortener-service",
+		"shortener-service",
+		"url-shortener-api",
+		"shortener-api",
+		"url-shortener-api-service",
+		"shortener-api-service",
+		"url-shortener-api-service-rest",
+		"shortener-api-service-rest",
+		"url-shortener-api-service-rest-api",
+		"shortener-api-service-rest-api"
+	],
+	"author": "marco-around",
+	"license": "MIT",
+	"packageManager": "pnpm@10.33.0",
+	"devDependencies": {
+		"@biomejs/biome": "2.4.16",
+		"@types/node": "^25.9.1",
+		"typescript": "^6.0.3"
+	},
+	"dependencies": {
+		"fastify": "^5.8.5"
+	}
+}
