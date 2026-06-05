@@ -1,0 +1,11 @@
+services:
+  cassandra:
+    image: cassandra:latest
+    ports:
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=llink-cluster
+    volumes:
+      - cassandra_data:/var/lib/cassandra
+volumes:
+  cassandra_data:
