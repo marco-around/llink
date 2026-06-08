@@ -17,7 +17,7 @@ export const cassandraPlugin = fp<CassandraPluginParams>(
 			throw error
 		}
 
-		fastify.decorate("cassandraClient", cassandraClient)
+		fastify.decorate("cassandra", cassandraClient)
 
 		fastify.addHook("onClose", async () => {
 			fastify.log.info("Closing Cassandra connection")

@@ -1,0 +1,7 @@
+# Variables
+
+@baseUrl = http://localhost:3000
+
+# Health check
+# @name healthCheck
+GET {{baseUrl}}/health
