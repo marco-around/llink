@@ -45,7 +45,7 @@ server.register(fastifySwagger, {
 			{
 				url:
 					env.NODE_ENV === "development"
-						? `http://localhost:${env.PORT}`
+						? env.BASE_URL
 						: "https://api.exemple.com/v1",
 				description: env.NODE_ENV,
 			},
@@ -93,9 +93,7 @@ process.on("SIGTERM", close)
 
 try {
 	await server.listen({ port: env.PORT, host: env.HOST })
-	server.log.info(
-		`API Reference available at http://${env.HOST}:${env.PORT}/reference`
-	)
+	server.log.info(`API Reference available at ${env.BASE_URL}/reference`)
 } catch (error) {
 	server.log.error(error)
 	process.exit(1)

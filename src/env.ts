@@ -6,6 +6,7 @@ const DEFAULT_LOG_LEVEL = "debug"
 const DEFAULT_NODE_ENV = "development"
 
 const envSchema = z.object({
+	BASE_URL: z.url(),
 	PORT: z.coerce.number().default(DEFAULT_PORT),
 	HOST: z.string().default(DEFAULT_HOST),
 	LOG_LEVEL: z
