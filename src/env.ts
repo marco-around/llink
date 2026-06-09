@@ -17,6 +17,8 @@ const envSchema = z.object({
 	CASSANDRA_CONTACT_POINTS: z.string().transform((value) => value.split(",")),
 	CASSANDRA_DATACENTER: z.string(),
 	CASSANDRA_KEYSPACE: z.string(),
+	REDIS_HOST: z.string(),
+	REDIS_PORT: z.coerce.number(),
 })
 
 export const env = envSchema.parse(process.env)

@@ -1,5 +1,6 @@
 import "dotenv/config"
 
+import fastifyRedis from "@fastify/redis"
 import fastifySwagger from "@fastify/swagger"
 import {
 	jsonSchemaTransform,
@@ -52,6 +53,12 @@ server.register(fastifySwagger, {
 	},
 	transform: jsonSchemaTransform,
 	transformObject: jsonSchemaTransformObject,
+})
+
+server.register(fastifyRedis, {
+	port: env.REDIS_PORT,
+	host: env.REDIS_HOST,
+	closeClient: true,
 })
 
 server.register(scalarFastifyApiReference, {
