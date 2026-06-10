@@ -1,5 +1,7 @@
 import "dotenv/config"
 
+import fastifyCors from "@fastify/cors"
+import fastifyRateLimit from "@fastify/rate-limit"
 import fastifyRedis from "@fastify/redis"
 import fastifySwagger from "@fastify/swagger"
 import {
@@ -10,10 +12,12 @@ import {
 	type ZodTypeProvider,
 } from "@fastify/type-provider-zod"
 import scalarFastifyApiReference from "@scalar/fastify-api-reference"
-import fastify from "fastify"
+import fastify, { type FastifyError } from "fastify"
 import { env } from "./env.js"
+import { ServerError } from "./errors/index.js"
 import { cassandraPlugin } from "./plugins/cassandra.js"
-import { routes } from "./routes/index.js"
+import { shortcodeIdGeneratorPlugin } from "./plugins/shortcode-id-generator.js"
+import { apiRoutes, rootRoutes } from "./routes/index.js"
 
 const server = fastify({
 	logger: {
@@ -34,6 +38,11 @@ const server = fastify({
 server.setSerializerCompiler(serializerCompiler)
 server.setValidatorCompiler(validatorCompiler)
 
+server.register(fastifyCors, {
+	origin: env.NODE_ENV === "production" ? env.ALLOWED_ORIGINS : "*",
+	methods: ["GET", "POST"],
+})
+
 server.register(fastifySwagger, {
 	openapi: {
 		info: {
@@ -43,10 +52,7 @@ server.register(fastifySwagger, {
 		},
 		servers: [
 			{
-				url:
-					env.NODE_ENV === "development"
-						? env.BASE_URL
-						: "https://api.exemple.com/v1",
+				url: env.BASE_URL,
 				description: env.NODE_ENV,
 			},
 		],
@@ -54,6 +60,8 @@ server.register(fastifySwagger, {
 	transform: jsonSchemaTransform,
 	transformObject: jsonSchemaTransformObject,
 })
+
+server.register(fastifyRateLimit, { global: false })
 
 server.register(fastifyRedis, {
 	port: env.REDIS_PORT,
@@ -75,7 +83,56 @@ server.register(cassandraPlugin, {
 	},
 })
 
-server.register(routes)
+server.register(shortcodeIdGeneratorPlugin, {
+	rangeSize: 1_000,
+	alphabet: "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz",
+	maxSize: 3_521_614_606_208n,
+	primeSalt: 1_982_736_451_239n,
+})
+
+server.register(rootRoutes)
+server.register(apiRoutes, { prefix: "/api/v1" })
+
+server.setErrorHandler((error: FastifyError, _req, reply) => {
+	if (error instanceof ServerError) {
+		server.log.warn(error)
+		return reply.status(error.statusCode).send({
+			error: {
+				code: error.code,
+				message: error.message,
+			},
+		})
+	}
+
+	if (error.validation) {
+		return reply.status(400).send({
+			error: {
+				code: "VALIDATION_ERROR",
+				message: error.message,
+			},
+		})
+	}
+
+	if (error.statusCode === 429) {
+		return reply.status(429).send({
+			error: {
+				code: "RATE_LIMIT_EXCEEDED",
+				message: "Too many requests",
+			},
+		})
+	}
+
+	server.log.error(error)
+	return reply.status(500).send({
+		error: {
+			code: "INTERNAL_ERROR",
+			message:
+				env.NODE_ENV === "production"
+					? "Internal server error"
+					: error.message,
+		},
+	})
+})
 
 async function close() {
 	try {

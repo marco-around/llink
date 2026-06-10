@@ -9,9 +9,7 @@ export async function healthCheckRoute(fastify: FastifyInstance) {
 				summary: "Health check",
 				description: "Health check endpoint to test if service is running",
 				response: {
-					200: z.object({
-						message: z.string(),
-					}),
+					200: z.string(),
 				},
 			},
 		},

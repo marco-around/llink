@@ -9,6 +9,10 @@ const envSchema = z.object({
 	BASE_URL: z.url(),
 	PORT: z.coerce.number().default(DEFAULT_PORT),
 	HOST: z.string().default(DEFAULT_HOST),
+	ALLOWED_ORIGINS: z
+		.string()
+		.transform((value) => value.split(","))
+		.optional(),
 	LOG_LEVEL: z
 		.enum(["fatal", "error", "warn", "info", "debug", "trace"])
 		.default(DEFAULT_LOG_LEVEL),

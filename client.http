@@ -5,3 +5,24 @@
 # Health check
 # @name healthCheck
 GET {{baseUrl}}/health
+
+###
+
+# Create short URL
+# @name createShortUrl
+POST {{baseUrl}}/api/v1/shorten
+Content-Type: application/json
+
+{
+  "url": "https://google.com"
+}
+
+###
+
+@shortUrl = {{createShortUrl.response.body.$.shortUrl}}
+
+###
+
+# Redirect to original URL
+# @name redirectToOriginalURL
+GET {{shortUrl}}
