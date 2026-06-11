@@ -20,8 +20,8 @@ export async function redirect(fastify: FastifyInstance) {
 			},
 			schema: {
 				summary: "Redirect to original URL",
-				description: "Redirect to original URL",
-				tags: ["redirect"],
+				description:
+					"This route get the original URL from the shortcode and redirects the user to it.",
 				params: z.object({
 					shortcode: z.string().length(7),
 				}),

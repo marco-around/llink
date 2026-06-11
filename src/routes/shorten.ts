@@ -16,8 +16,8 @@ export async function shorten(fastify: FastifyInstance) {
 			},
 			schema: {
 				summary: "Create a new short URL",
-				description: "Create a new short URL",
-				tags: ["shorten"],
+				description:
+					"This route take a original URL and return a new short URL.",
 				body: z.object({
 					url: z.url(),
 				}),
@@ -51,9 +51,7 @@ export async function shorten(fastify: FastifyInstance) {
 				)
 			}
 
-			return reply
-				.code(201)
-				.send({ shortUrl: `${env.BASE_URL}/${shortcode}` })
+			return reply.code(201).send({ shortUrl: `${env.BASE_URL}/${shortcode}` })
 		}
 	)
 }
